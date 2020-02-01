@@ -224,11 +224,11 @@ class NeuralNetwork(object):
         
         #### Implement the forward pass here ####
         # TODO: Hidden layer - replace these values with the appropriate calculations.
-        hidden_inputs = features.dot(self.weights_input_to_hidden) # signals into hidden layer
+        hidden_inputs = np.dot(features,self.weights_input_to_hidden) # signals into hidden layer
         hidden_outputs = self.activation_function(hidden_inputs) # signals from hidden layer
         
         # TODO: Output layer - Replace these values with the appropriate calculations.
-        final_inputs = hidden_outputs.dot(self.weights_hidden_to_output) # signals into final output layer
+        final_inputs = np.dot(hidden_outputs,self.weights_hidden_to_output) # signals into final output layer
         final_outputs = final_inputs # signals from final output layer 
         
         return final_outputs
@@ -334,8 +334,8 @@ unittest.TextTestRunner().run(suite)
 import sys
 
 ### Set the hyperparameters here ###
-iterations = 1000
-learning_rate = 0.5
+iterations = 5000
+learning_rate = 0.7
 hidden_nodes = 20
 output_nodes = 1
 
@@ -360,34 +360,11 @@ for ii in range(iterations):
     losses['validation'].append(val_loss)
 
 
-# In[11]:
-
-
-losses['train']=[round(x,2) for x in losses['train']]
-losses['validation']=[round(x,2) for x in losses['validation']]
-
-
 # In[15]:
 
 
-losses['train_mean']=[]
-for i in range(iterations):
-    losses['train_mean'].append(sum(losses['train'][i])/iterations)
-
-
-# In[17]:
-
-
-losses['validation_mean']=[]
-for i in range(iterations):
-    losses['validation_mean'].append(sum(losses['validation'][i])/iterations)
-
-
-# In[18]:
-
-
-plt.plot(losses['train_mean'], label='Training loss')
-plt.plot(losses['validation_mean'], label='Validation loss')
+plt.plot(losses['train'], label='Training loss')
+plt.plot(losses['validation'], label='Validation loss')
 plt.legend()
 _ = plt.ylim()
 
@@ -396,15 +373,14 @@ _ = plt.ylim()
 # 
 # 使用测试数据看看网络对数据建模的效果如何。如果完全错了，请确保网络中的每步都正确实现。
 
-# In[12]:
+# In[17]:
 
 
 fig, ax = plt.subplots(figsize=(8,4))
 
 mean, std = scaled_features['cnt']
 predictions = network.run(test_features).T*std + mean
-predictions=predictions.values.reshape(504,-1)
-ax.plot(predictions, label='Prediction')
+ax.plot(predictions[0], label='Prediction')
 ax.plot((test_targets['cnt']*std + mean).values, label='Data')
 ax.set_xlim(right=len(predictions))
 ax.legend()
