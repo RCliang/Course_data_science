@@ -4,12 +4,22 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    读取数据
+    输入变量：文本路径，标签路径
+    输出变量：合并后的dataframe
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     return pd.merge(messages,categories,how='inner',on='id')
 
 
 def clean_data(df):
+    """
+    清洗数据
+    输入变量：目标dataframe
+    输出变量：清洗完的dataframe
+    """
     categories = df.categories.str.split(';',expand=True)
     row = categories.loc[0,:]
     category_colnames = row.apply(lambda x: x[:-2])
@@ -19,7 +29,7 @@ def clean_data(df):
         categories[column] = categories[column].str[-1]
     
     # convert column from string to numeric
-        categories[column] = categories[column].astype(str)
+        categories[column] = categories[column].astype(float)
     df.drop('categories', axis=1, inplace=True)
     df = pd.concat([df,categories],axis=1)
     df.drop_duplicates(inplace=True)
@@ -27,6 +37,11 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    保存数据
+    输入变量：目标dataframe，数据库路径
+    输出变量：无
+    """
     engine = create_engine('sqlite:///'+database_filename)
     df.to_sql('DisasterResponse', engine, index=False)
 

@@ -40,11 +40,14 @@ def index():
     
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
-    category_counts = d[]
-
+    category_counts = []
     category_names = list(df.iloc[:,4:].columns)
     for item in category_names:
         category_counts.append(df[item].sum())
+
+    temp=df.groupby('request')['aid_related'].sum()
+    is_request = ['no', 'yes']
+    aid_related_cnt = [temp[0], temp[1]]
 
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -64,6 +67,24 @@ def index():
                 },
                 'xaxis': {
                     'title': "category_names"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=is_request,
+                    y=aid_related_cnt
+                )
+            ],
+
+            'layout': {
+                'title': 'The counts of is_aid_related whether is request',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "is request"
                 }
             }
         }

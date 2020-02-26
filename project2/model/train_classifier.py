@@ -18,6 +18,11 @@ from sklearn.metrics import classification_report
 from sklearn.externals import joblib
 
 def load_data(database_filepath):
+    """
+    读取数据
+    输入变量：数据库地址
+    输出变量：自变量，应变量，标签名
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql('select * from DisasterResponse', engine)
     X = df.message.values
@@ -26,6 +31,11 @@ def load_data(database_filepath):
     return X, y, categories
 
 def tokenize(text):
+    """
+    文本清洗
+    输入变量：文本
+    输出变量：已处理完成的文本变量
+    """
     text = re.sub(r"[^a-zA-Z0-9]"," ",text)
     tokens = word_tokenize(text)
     tokens = [w for w in tokens if w not in stopwords.words("english")]
@@ -38,6 +48,11 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    建立模型
+    输入变量：无
+    输出变量：已实例化的模型对象
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -56,12 +71,22 @@ def build_model():
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    y_pred = pd.DataFrame(cv.predict(X_test),columns=category_names)
+    """
+    评估模型
+    输入变量：模型对象，测试集自变量，测试集应变量，标签名
+    输出变量：无
+    """
+    y_pred = pd.DataFrame(model.predict(X_test),columns=category_names)
     for col in category_names:
         print ('classification report for ', col)
-        print(classification_report(y_test[col], y_pred[col],))
+        print(classification_report(Y_test[col], y_pred[col],))
 
 def save_model(model, model_filepath):
+    """
+    保存模型
+    输入变量：模型对象，模型保存路径
+    输出变量：无
+    """
     with open(model_filepath,'wb') as fw:
 	    joblib.dump(model,fw)
 
